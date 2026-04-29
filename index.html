@@ -68,8 +68,36 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f9;min-height:1
 .ct-btn{padding:7px 13px;border:none;background:white;font-size:12px;font-weight:600;cursor:pointer;color:#6b7280;transition:all .15s}
 .ct-btn.active{background:#0f3460;color:white}
 </style>
+<script>
+(function(){
+  if(sessionStorage.getItem('fr_auth')==='1') return;
+  document.addEventListener('DOMContentLoaded', function(){
+    document.body.innerHTML = `
+      <div style="font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a1a2e,#0f3460);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0">
+        <div style="background:white;border-radius:16px;padding:40px 36px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center">
+          <div style="font-size:44px;margin-bottom:16px">🚢</div>
+          <div style="font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:6px">Freight Rates</div>
+          <div style="font-size:13px;color:#9ca3af;margin-bottom:28px">India → Brazil · Acesso restrito</div>
+          <input id="pw" type="password" placeholder="Digite a senha"
+            style="width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:12px 16px;font-size:15px;outline:none;text-align:center;letter-spacing:4px;color:#1a1a2e"
+            onkeydown="if(event.key==='Enter')document.getElementById('btn').click()">
+          <button id="btn" onclick="(function(){
+            var p=document.getElementById('pw').value;
+            if(p==='SKY54321'){sessionStorage.setItem('fr_auth','1');location.reload();}
+            else{document.getElementById('err').style.display='block';document.getElementById('pw').value='';document.getElementById('pw').focus();}
+          })()"
+            style="width:100%;margin-top:14px;background:#0f3460;color:white;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer">
+            Entrar
+          </button>
+          <div id="err" style="margin-top:12px;font-size:12px;color:#dc2626;display:none">Senha incorreta. Tente novamente.</div>
+        </div>
+      </div>`;
+  });
+})();
+</script>
 </head>
 <body>
+
 <div class="header">
   <div style="font-size:28px">🚢</div>
   <div>
