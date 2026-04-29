@@ -50,15 +50,18 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f9;min-height:1
 .expired{background:#fef2f2;color:#dc2626}
 .dates{font-size:11px;color:#9ca3af}
 .info-row{font-size:11px;color:#9ca3af;margin-top:3px}
-.card-right{text-align:right;flex-shrink:0}
-.price-main{font-size:22px;font-weight:700;color:#1a1a2e}
-.price-unit{font-size:11px;color:#9ca3af}
-.price-alt{font-size:11px;color:#c0c0c0;margin-top:2px}
+.card-right{text-align:right;flex-shrink:0;min-width:140px}
+.price-block{margin-bottom:4px}
+.price-main{font-size:20px;font-weight:700;color:#1a1a2e;line-height:1.1}
+.price-label{font-size:11px;color:#9ca3af;margin-top:1px}
+.price-alt-block{margin-top:6px;padding-top:6px;border-top:1px solid #f3f4f6}
+.price-alt-val{font-size:14px;font-weight:600;color:#6b7280}
+.price-alt-label{font-size:11px;color:#c0c0c0}
 .card-footer{padding:8px 16px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid #f3f4f6}
 .remarks-toggle{background:none;border:none;cursor:pointer;font-size:11px;color:#9ca3af;padding:0;display:flex;align-items:center;gap:3px}
 .remarks-box{margin:0 16px 10px;background:#f9fafb;border-radius:6px;padding:7px 10px;font-size:11px;color:#6b7280;line-height:1.5}
-.schedule-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;border:1.5px solid;font-size:11px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap}
-.schedule-btn:hover{opacity:.8}
+.schedule-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;border:1.5px solid;font-size:11px;font-weight:600;cursor:pointer;text-decoration:none;transition:opacity .15s;white-space:nowrap}
+.schedule-btn:hover{opacity:.75}
 .empty{text-align:center;padding:48px;color:#9ca3af;font-size:14px}
 .placeholder{text-align:center;padding:48px;color:#c0c0c0;font-size:14px}
 .container-toggle{display:flex;border:1.5px solid #e5e7eb;border-radius:8px;overflow:hidden}
@@ -79,8 +82,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f9;min-height:1
   <div class="field">
     <label>Container</label>
     <div class="container-toggle">
-      <button class="ct-btn active" onclick="setContainer('20',this)">20' Dry</button>
-      <button class="ct-btn" onclick="setContainer('40',this)">40' HC</button>
+      <button class="ct-btn active" onclick="setContainer('20',this)">20' GP</button>
+      <button class="ct-btn" onclick="setContainer('40',this)">40' HQ</button>
     </div>
   </div>
   <div class="field">
@@ -129,34 +132,23 @@ const PORS=["CHENNAI", "COCHIN", "ENNORE", "HAZIRA", "ICD AHEMDABAD", "ICD AHMED
 const PODS=["IMBITUBA", "ITAGUAI", "ITAJAI", "ITAPOA", "MANAUS", "NAVEGANTES", "PARANAGUA", "PECEM", "RIO DE JANEIRO", "RIO GRANDE", "SALVADOR", "SANTOS", "SUAPE", "VILA DO CONDE", "VITORIA"];
 let container="20",sortBy="price";
 
-// Schedule URLs per carrier
-function scheduleUrl(carrier, por, pod) {
-  const orig = por.split('/')[0].trim().toUpperCase();
-  const dest = pod.split('/')[0].trim().toUpperCase();
-  const oCode = PC[orig] || '';
-  const dCode = PC[dest] || '';
-  switch(carrier) {
+function scheduleUrl(carrier,por,pod){
+  const orig=por.split('/')[0].trim().toUpperCase();
+  const dest=pod.split('/')[0].trim().toUpperCase();
+  const oCode=PC[orig]||'';
+  const dCode=PC[dest]||'';
+  switch(carrier){
     case 'MSK - MAERSK':
-      return oCode && dCode
+      return oCode&&dCode
         ? `https://www.maersk.com/schedules/pointToPoint?searchType=PORT&origin=${oCode}&destination=${dCode}`
         : 'https://www.maersk.com/schedules/pointToPoint';
-    case 'MSC':
-      return 'https://www.msc.com/en/search-a-schedule';
-    case 'CMA-CGM':
-      return 'https://www.cma-cgm.com/ebusiness/schedules/sailing';
-    case 'HAPAG':
-      return 'https://www.hapag-lloyd.com/en/online-business/schedule/schedule-search.html';
-    case 'EMC - EVERGREEN':
-      return 'https://www.evergreen-line.com/schedule/';
-    case 'HMM - HYUNDAI':
-      return 'https://www.hmm21.com/cms/business/oceania/schedule/index.jsp';
-    default:
-      return '#';
+    case 'MSC': return 'https://www.msc.com/en/search-a-schedule';
+    case 'CMA-CGM': return 'https://www.cma-cgm.com/';
+    case 'HAPAG': return 'https://www.hapag-lloyd.com/solutions/schedule/#/';
+    case 'EMC - EVERGREEN': return 'https://ss.shipmentlink.com/tvs2/jsp/TVS2_InteractiveSchedule.jsp';
+    case 'HMM - HYUNDAI': return 'https://www.hmm21.com/e-service/general/schedule/ScheduleMain.do';
+    default: return '#';
   }
-}
-
-function scheduleColor(carrier) {
-  return CC[carrier] || '#888';
 }
 
 function splitPorts(s){return s.split(/[\/,]/).map(p=>p.trim().toUpperCase()).filter(Boolean);}
@@ -169,10 +161,7 @@ function acFilter(field,q){
   drop.style.display="block";
 }
 function acOpen(field){acFilter(field,document.getElementById(field+"-input").value||"");}
-function acSelect(field,val){
-  document.getElementById(field+"-input").value=val;
-  document.getElementById(field+"-drop").style.display="none";
-}
+function acSelect(field,val){document.getElementById(field+"-input").value=val;document.getElementById(field+"-drop").style.display="none";}
 document.addEventListener("click",e=>{
   if(!e.target.closest("#ac-por")) document.getElementById("por-drop").style.display="none";
   if(!e.target.closest("#ac-pod")) document.getElementById("pod-drop").style.display="none";
@@ -181,6 +170,7 @@ function setContainer(ct,btn){container=ct;document.querySelectorAll(".ct-btn").
 function setSort(s){sortBy=s;document.querySelectorAll(".sort-btn").forEach(b=>b.classList.remove("active"));document.querySelector(`[data-sort="${s}"]`).classList.add("active");search();}
 function parseDate(s){if(!s)return null;const p=s.split("/");return p.length===3?new Date(+p[2],+p[1]-1,+p[0]):null;}
 function vStatus(vu){const d=parseDate(vu);if(!d)return"valid";const n=new Date();if(d<n)return"expired";return(d-n)/86400000<=7?"soon":"valid";}
+function fmtPrice(v){return v?'USD '+v.toLocaleString("pt-BR"):'—';}
 
 function search(){
   const por=document.getElementById("por-input").value.trim().toUpperCase();
@@ -189,10 +179,10 @@ function search(){
   const agente=document.getElementById("agente-sel").value;
 
   let f=D.filter(r=>{
-    if(por && !splitPorts(r[2]).includes(por)) return false;
-    if(pod && !splitPorts(r[4]).includes(pod)) return false;
-    if(carrier && r[0]!==carrier) return false;
-    if(agente && r[1]!==agente) return false;
+    if(por&&!splitPorts(r[2]).includes(por)) return false;
+    if(pod&&!splitPorts(r[4]).includes(pod)) return false;
+    if(carrier&&r[0]!==carrier) return false;
+    if(agente&&r[1]!==agente) return false;
     return true;
   });
 
@@ -207,18 +197,25 @@ function search(){
   let html=`<div class="meta"><div class="count">${f.length} resultado${f.length!==1?"s":""} encontrado${f.length!==1?"s":""}</div><div class="sort-btns"><button class="sort-btn${sortBy==="price"?" active":""}" data-sort="price" onclick="setSort('price')">Menor preço</button><button class="sort-btn${sortBy==="validity"?" active":""}" data-sort="validity" onclick="setSort('validity')">Validade</button></div></div><div class="cards">`;
 
   f.forEach((r,i)=>{
-    const p=container==="20"?(r[5]||0):(r[6]||0);
-    const p2=container==="20"?(r[6]||0):(r[5]||0);
-    const isBest=lowest!==null&&p===lowest&&p>0;
+    // r: [carrier,agente,por,pol,pod,f20,f40,mbl,free,vfrom,vuntil,remarks,sheet,inland20,inland40]
+    const is20=container==="20";
+    const pMain=is20?(r[5]||0):(r[6]||0);
+    const pAlt=is20?(r[6]||0):(r[5]||0);
+    const labelMain=is20?"20' GP":"40' HQ";
+    const labelAlt=is20?"40' HQ":"20' GP";
+    const isBest=lowest!==null&&pMain===lowest&&pMain>0;
     const vs=vStatus(r[10]);
     const vLabel=vs==="expired"?"Expirado":vs==="soon"?"Expira em breve":"Válido";
     const col=CC[r[0]]||"#888";
     const short=CS[r[0]]||r[0];
     const isICD=r[12]==="ICD";
-    const mbl=String(r[7]||"").replace(/USD\s*/i,"").trim();
+
+    // FREE TIME (index 8), MBL (index 7)
+    const freetime=String(r[8]||"").trim();
+    const mblRaw=String(r[7]||"").replace(/USD\s*/i,"").trim();
     let mblText="";
-    if(mbl&&mbl!=="INCLUDED"&&mbl!=="INCL") mblText=` · MBL: USD ${mbl}`;
-    else if(mbl==="INCLUDED"||mbl==="INCL") mblText=" · MBL: incluído";
+    if(mblRaw&&mblRaw!=="INCLUDED"&&mblRaw!=="INCL"&&mblRaw!=="") mblText=` · MBL: USD ${mblRaw}`;
+    else if(mblRaw==="INCLUDED"||mblRaw==="INCL") mblText=" · MBL: incluído";
     let inlandText="";
     if(r[13]&&r[13]!=="") inlandText=` · Inland 20': ${r[13]}`;
     if(r[14]&&r[14]!=="") inlandText+=` / 40': ${r[14]}`;
@@ -230,12 +227,17 @@ function search(){
     html+=`<div class="carrier-row"><div class="carrier-dot" style="background:${col}"></div><span class="carrier-name">${short}</span><span class="agent-badge">${r[1]}</span>${isICD?'<span class="icd-badge">ICD</span>':''}</div>`;
     html+=`<div class="route-row"><span class="route-port">${r[2]}</span><span class="route-arrow">→</span><span class="route-port">${r[4]}</span></div>`;
     html+=`<div class="badges"><span class="validity-badge ${vs}">${vLabel}</span><span class="dates">${r[9]} → ${r[10]}</span></div>`;
-    html+=`<div class="info-row">Free days: ${r[7]||r[8]}${mblText}${inlandText}</div>`;
-    html+=`</div><div class="card-right"><div class="price-main">USD ${p.toLocaleString("pt-BR")}</div><div class="price-unit">${container==="20"?"20' Dry":"40' HC"}</div>${p2?`<div class="price-alt">${container==="20"?"40'HC":"20'"}: USD ${p2.toLocaleString("pt-BR")}</div>`:""}</div></div>`;
+    html+=`<div class="info-row">Free Time: ${freetime||"—"}${mblText}${inlandText}</div>`;
+    html+=`</div>`;
+    // Price block right
+    html+=`<div class="card-right">`;
+    html+=`<div class="price-block"><div class="price-main">${fmtPrice(pMain)}</div><div class="price-label">${labelMain}</div></div>`;
+    if(pAlt) html+=`<div class="price-alt-block"><div class="price-alt-val">${fmtPrice(pAlt)}</div><div class="price-alt-label">${labelAlt}</div></div>`;
+    html+=`</div></div>`;
+    // Footer
     html+=`<div class="card-footer">`;
-    if(r[11]) html+=`<button class="remarks-toggle" onclick="toggleRem(${i})"><span id="arr-${i}">▼</span> observações</button>`;
-    else html+=`<span></span>`;
-    html+=`<a href="${schUrl}" target="_blank" class="schedule-btn" style="color:${col};border-color:${col}">🗓 Ver schedule ${short}</a>`;
+    html+=r[11]?`<button class="remarks-toggle" onclick="toggleRem(${i})"><span id="arr-${i}">▼</span> observações</button>`:`<span></span>`;
+    html+=`<a href="${schUrl}" target="_blank" class="schedule-btn" style="color:${col};border-color:${col}">🗓 Schedule ${short}</a>`;
     html+=`</div>`;
     if(r[11]) html+=`<div class="remarks-box" id="rem-${i}" style="display:none">${r[11]}</div>`;
     html+=`</div>`;
