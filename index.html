@@ -92,6 +92,97 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f9;min-height:1
 .sch-a:hover{opacity:.75}
 .empty{text-align:center;padding:48px;color:#9ca3af;font-size:14px}
 .hint{text-align:center;padding:52px;color:#9ca3af;font-size:13px}
+
+/* ─── MOBILE RESPONSIVE ───────────────────────────────────── */
+@media (max-width: 768px){
+  .hdr{padding:16px 18px;gap:10px}
+  .hdr h1{font-size:15px}
+  .hdr p{font-size:11px}
+  .hdr > div:first-child{font-size:22px !important}
+
+  .hero{padding:0 12px 18px}
+
+  .sbar{
+    flex-direction:column;
+    border-radius:18px;
+    padding:8px;
+    gap:6px;
+    margin-top:14px;
+    align-items:stretch;
+  }
+  .sep{display:none}
+  .ct-wrap{padding:10px 14px;width:100%}
+  .ct-row{justify-content:flex-start}
+  .ac-wrap, .sel-wrap{width:100%;flex:none}
+  .ac-inner, .sel-inner{padding:10px 14px;border-radius:12px;background:#f7f7f7}
+  .ac-inner:hover, .sel-inner:hover{background:#eef2f7}
+  .ac-drop, .sel-drop{
+    position:fixed;
+    left:12px;
+    right:12px;
+    top:auto;
+    min-width:auto;
+    max-height:50vh;
+  }
+
+  .go-btn{
+    width:100%;
+    height:44px;
+    border-radius:12px;
+    margin:6px 0 0 0;
+    font-size:15px;
+    font-weight:600;
+  }
+  .go-btn::after{content:" Buscar";font-size:14px;font-weight:600}
+
+  .clear-btn{
+    width:100%;
+    height:38px;
+    border-radius:12px;
+    margin:0;
+    font-size:13px;
+  }
+  .clear-btn::after{content:" Limpar filtros";font-size:13px}
+
+  .main{padding:14px 12px}
+  .meta{flex-direction:column;align-items:flex-start;gap:8px}
+
+  .cbody{flex-direction:column;padding:14px;gap:10px}
+  .cright{
+    text-align:left;
+    min-width:auto;
+    width:100%;
+    padding-top:10px;
+    border-top:1px solid #f3f4f6;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .pa{
+    margin-top:0;
+    padding-top:0;
+    border-top:none;
+    display:inline-flex;
+    align-items:baseline;
+    gap:6px;
+  }
+  .pav, .pal{display:inline}
+  .pal{font-size:10px}
+
+  .rport{font-size:10px;padding:3px 8px;word-break:break-word;max-width:100%}
+  .cfooter{padding:8px 14px 12px;flex-direction:column;align-items:stretch;gap:6px}
+  .sch-a{justify-content:center;padding:8px 14px;font-size:12px}
+  .rem-btn{align-self:flex-start;padding:4px 0}
+  .rem-box{margin:0 14px 10px}
+}
+@media (max-width: 480px){
+  .hdr h1{font-size:14px}
+  .pm{font-size:20px}
+  .pav{font-size:13px}
+}
+
 </style>
 </head>
 <body>
