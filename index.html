@@ -48,6 +48,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f9;min-height:1
 /* Search btn */
 .go-btn{width:48px;height:48px;border-radius:50%;background:#0f3460;border:none;color:#fff;font-size:17px;cursor:pointer;flex-shrink:0;margin:4px;transition:background .15s;display:flex;align-items:center;justify-content:center}
 .go-btn:hover{background:#1a1a2e}
+.clear-btn{width:36px;height:36px;border-radius:50%;background:transparent;border:1.5px solid #ddd;color:#999;font-size:13px;cursor:pointer;flex-shrink:0;margin:0 6px 0 0;transition:all .15s;display:none;align-items:center;justify-content:center;font-weight:700}
+.clear-btn:hover{background:#fef2f2;border-color:#dc2626;color:#dc2626}
 /* Results */
 .main{padding:24px 32px;max-width:980px;margin:0 auto}
 .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
@@ -193,6 +195,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f9;min-height:1
     </div>
 
     <button class="go-btn" onclick="doSearch()">🔍</button>
+    <button class="clear-btn" id="clear-btn" onclick="clearAll()" title="Limpar filtros" style="display:none">✕</button>
   </div>
 </div>
 
@@ -400,7 +403,7 @@ function doSearch(){
     h+='<div style="background:'+stripCol+';height:6px;width:100%"></div>';
     if(best) h+='<div class="best-lbl">✓ Menor preço</div>';
     h+='<div class="cbody"><div class="cleft">';
-    h+='<div class="crow"><div class="cdot" style="background:'+col+'"></div><span class="cname">'+sh+'</span><span class="bdg bdg-a">'+r[1]+'</span>'+(isICD?'<span class="bdg bdg-icd">ICD</span>':'')+'</div>';
+    h+='<div class="crow"><div class="cdot" style="background:'+stripCol+'"></div><span class="cname">'+sh+'</span><span class="bdg bdg-a">'+r[1]+'</span>'+(isICD?'<span class="bdg bdg-icd">ICD</span>':'')+'</div>';
     h+='<div class="rrow"><span class="rport">'+r[2]+'</span><span class="rarr">→</span><span class="rport">'+r[4]+'</span></div>';
     h+='<div class="drow"><span class="bdg '+vbc+'">'+vl+'</span><span style="font-size:11px;color:#9ca3af">'+r[9]+' → '+r[10]+'</span></div>';
     h+='<div class="info">Free Time: '+(ft||'—')+mblT+'</div>';
@@ -420,6 +423,7 @@ function doSearch(){
   var sbVl=document.getElementById('sb-vl');
   if(sbPr) sbPr.addEventListener('click',function(){srt='price';doSearch();});
   if(sbVl) sbVl.addEventListener('click',function(){srt='validity';doSearch();});
+  showClearBtn();
 
   // Attach rem buttons
   f.forEach(function(r,i){
@@ -429,6 +433,34 @@ function doSearch(){
       if(box){box.style.display=box.style.display==='block'?'none':'block';rb.textContent=(box.style.display==='block'?'▲':'▼')+' observações';}
     });
   });
+}
+
+// ── Clear all ────────────────────────────────────────────────────────
+function clearAll(){
+  // Reset inputs
+  document.getElementById('inp-por').value='';
+  document.getElementById('inp-pod').value='';
+  selPor=''; selPod=''; selAg=''; selCars=[];
+  // Reset carrier UI
+  updateCarUI();
+  // Reset agente
+  document.getElementById('sv-ag').textContent='Todos';
+  document.getElementById('sv-ag').className='sel-val';
+  document.querySelectorAll('#sd-ag .sel-item').forEach(function(x){x.classList.remove('on');});
+  var first=document.querySelector('#sd-ag .sel-item');
+  if(first) first.classList.add('on');
+  // Reset container
+  setCT('20');
+  // Clear results
+  document.getElementById('results').innerHTML='<div class="hint">Selecione origem e destino, depois clique em 🔍</div>';
+  // Hide clear button
+  document.getElementById('clear-btn').style.display='none';
+  closeDrops();
+}
+
+function showClearBtn(){
+  var btn=document.getElementById('clear-btn');
+  if(btn) btn.style.cssText='display:flex;width:36px;height:36px;border-radius:50%;background:transparent;border:1.5px solid #ddd;color:#999;font-size:13px;cursor:pointer;flex-shrink:0;margin:0 6px 0 0;transition:all .15s;align-items:center;justify-content:center;font-weight:700';
 }
 
 // ── Init ────────────────────────────────────────────────────────────
