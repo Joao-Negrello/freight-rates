@@ -394,7 +394,10 @@ function doSearch(){
     var schUrl=SCH[r[0]]||'#';
     if(r[0]==='MSK - MAERSK'){var o=r[2].split('/')[0].trim().toUpperCase();var d=r[4].split('/')[0].trim().toUpperCase();var oc=PC[o]||'';var dc=PC[d]||'';if(oc&&dc)schUrl='https://www.maersk.com/schedules/pointToPoint?searchType=PORT&origin='+oc+'&destination='+dc;}
 
+    var stripColors={"MSK - MAERSK":"#0077C8","CMA-CGM":"#1A3A6B","EMC - EVERGREEN":"#00703C","MSC":"#F5A800","HAPAG":"#E8630A","HMM - HYUNDAI":"#CC0000"};
+    var stripCol=stripColors[r[0]]||col;
     h+='<div class="card'+(best?' best':'')+'"><div id="c'+i+'">';
+    h+='<div style="background:'+stripCol+';height:6px;width:100%"></div>';
     if(best) h+='<div class="best-lbl">✓ Menor preço</div>';
     h+='<div class="cbody"><div class="cleft">';
     h+='<div class="crow"><div class="cdot" style="background:'+col+'"></div><span class="cname">'+sh+'</span><span class="bdg bdg-a">'+r[1]+'</span>'+(isICD?'<span class="bdg bdg-icd">ICD</span>':'')+'</div>';
