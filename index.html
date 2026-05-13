@@ -205,7 +205,32 @@ var PORS=["CHENNAI","COCHIN","ENNORE","HAZIRA","ICD AHEMDABAD","ICD AHMEDBAD","I
 var PODS=["IMBITUBA","ITAGUAI","ITAJAI","ITAPOA","MANAUS","NAVEGANTES","PARANAGUA","PECEM","RIO DE JANEIRO","RIO GRANDE","SALVADOR","SANTOS","SUAPE","VILA DO CONDE","VITORIA"];
 var CC={"MSK - MAERSK":"#0077C8","CMA-CGM":"#1A3A6B","EMC - EVERGREEN":"#00703C","MSC":"#d4920a","HAPAG":"#E8630A","HMM - HYUNDAI":"#CC0000"};
 var CS={"MSK - MAERSK":"MAERSK","CMA-CGM":"CMA CGM","EMC - EVERGREEN":"EVERGREEN","MSC":"MSC","HAPAG":"HAPAG","HMM - HYUNDAI":"HMM"};
-var PC={"MUNDRA":"INMUN","NHAVA SHEVA":"INNSA","HAZIRA":"INHZA","CHENNAI":"INMAA","ENNORE":"INENN","TUTICORIN":"INTUT","COCHIN":"INCOK","KOLKATA":"INCCU","KATTUPALLI":"INKAT","KATTUPALI":"INKAT","VISAKHAPATNAM":"INVTZ","VISHAKPATNAM":"INVTZ","PIPAVAV":"INPAV","SANTOS":"BRSSZ","PARANAGUA":"BRPNG","ITAPOA":"BRITJ","NAVEGANTES":"BRNVT","RIO DE JANEIRO":"BRRIO","RIO GRANDE":"BRRIG","SALVADOR":"BRSSA","ITAGUAI":"BRITG","SUAPE":"BRIPE","PECEM":"BRPEC","VITORIA":"BRVIX","MANAUS":"BRMAN","VILA DO CONDE":"BRVDC","ITAJAI":"BRITJ","IMBITUBA":"BRIMS"};
+var MSK_PORTS={
+"NHAVA SHEVA":{"rkst":"INJHT","geo":"20JS07ETK8AE1"},
+"MUNDRA":{"rkst":"INLT4","geo":"09XXU0KYD95NO"},
+"HAZIRA":{"rkst":"INHAZ","geo":"0WLD906B7Z1ZG"},
+"COCHIN":{"rkst":"INCOK","geo":"1PLWPN9WJW70F"},
+"TUTICORIN":{"rkst":"INTUT","geo":"1VM1RGJFC1VO9"},
+"KOLKATA":{"rkst":"INCCU","geo":"38C3BXKY0R921"},
+"PIPAVAV":{"rkst":"INPPV","geo":"1QF1SC3MCQHUZ"},
+"ENNORE":{"rkst":"INENN","geo":"YLEOCZ8YSHLCX"},
+"CHENNAI":{"rkst":"INENN","geo":"YLEOCZ8YSHLCX"},
+"VISAKHAPATNAM":{"rkst":"INVTZ","geo":"2IBZJHEAWE2YN"},
+"VISHAKPATNAM":{"rkst":"INVTZ","geo":"2IBZJHEAWE2YN"},
+"ITAGUAI":{"rkst":"BRRSH","geo":"118IL3FWVXQN1"},
+"ITAPOA":{"rkst":"BRIOA","geo":"0ODHB712UAZ82"},
+"RIO GRANDE":{"rkst":"BRRIG","geo":"1835DCIX1HYMX"},
+"SALVADOR":{"rkst":"BRSSA","geo":"0CLBAS6FZOUBI"},
+"SANTOS":{"rkst":"BRSSZ","geo":"1BX66GARX9UAH"},
+"PARANAGUA":{"rkst":"BRPNG","geo":"3R8LV7CQTY45A"},
+"SUAPE":{"rkst":"BRB3G","geo":"06UMEUNU4I9VI"},
+"VITORIA":{"rkst":"BRVIX","geo":"0MGC8M302NIBI"},
+"PECEM":{"rkst":"BR6D3","geo":"395X0AB71OGIS"},
+"MANAUS":{"rkst":"BRMAO","geo":"2Q01XOB8933PA"},
+"ITAJAI":{"rkst":"BRA4A","geo":"0TKNIVVB82OVY"},
+"RIO DE JANEIRO":{"rkst":"BRRIO","geo":"19GF6Q1SUBOGP"},
+"VILA DO CONDE":{"rkst":"BRVIC","geo":"33U3A4O73F9NQ"}
+};
 var SCH={"MSK - MAERSK":"https://www.maersk.com/schedules/pointToPoint","MSC":"https://www.msc.com/en/search-a-schedule","CMA-CGM":"https://www.cma-cgm.com/","HAPAG":"https://www.hapag-lloyd.com/solutions/schedule/#/","EMC - EVERGREEN":"https://ss.shipmentlink.com/tvs2/jsp/TVS2_InteractiveSchedule.jsp","HMM - HYUNDAI":"https://www.hmm21.com/e-service/general/schedule/ScheduleMain.do"};
 var CARR_IDS={"CMA-CGM":"ci-cma","EMC - EVERGREEN":"ci-eve","HAPAG":"ci-hap","HMM - HYUNDAI":"ci-hmm","MSC":"ci-msc","MSK - MAERSK":"ci-msk"};
 var ct="20",srt="price";
@@ -325,7 +350,17 @@ function doSearch(){
     var mbl=String(r[7]||'').replace(/USD\s*/i,'').trim();
     var mblT=mbl&&mbl!=='INCLUDED'&&mbl!=='INCL'?' \u00b7 MBL: USD '+mbl:(mbl==='INCLUDED'||mbl==='INCL')?' \u00b7 MBL: incl.':'';
     var schUrl=SCH[r[0]]||'#';
-    if(r[0]==='MSK - MAERSK'){var o=r[2].split('/')[0].trim().toUpperCase();var d=r[4].split('/')[0].trim().toUpperCase();var oc=PC[o]||'';var dc=PC[d]||'';if(oc&&dc)schUrl='https://www.maersk.com/schedules/pointToPoint?searchType=PORT&origin='+oc+'&destination='+dc;}
+    if(r[0]==='MSK - MAERSK'){
+      var o=r[2].split('/')[0].trim().toUpperCase();
+      var d=r[4].split('/')[0].trim().toUpperCase();
+      var op=MSK_PORTS[o];var dp=MSK_PORTS[d];
+      if(op&&dp){
+        var iso=ct==='20'?'22G1':'45G1';
+        var today=new Date();var dd=today.toISOString().split('T')[0];
+        var fut=new Date(today.getTime()+28*86400000);var dd2=fut.toISOString().split('T')[0];
+        schUrl='https://www.maersk.com/schedules/pointToPoint?from='+op.geo+'&to='+dp.geo+'&fromRkstCode='+op.rkst+'&toRkstCode='+dp.rkst+'&containerIsoCode='+iso+'&fromServiceMode=CY&toServiceMode=CY&numberOfWeeks=4&dateType=D&date='+dd+'&dateTo='+dd2+'&vesselFlag=';
+      }
+    }
     h+='<div class="card'+(best?' best':'')+'"><div id="c'+i+'">';
     h+='<div style="background:'+col+';height:6px;width:100%"></div>';
     if(best)h+='<div class="best-lbl">\u2713 Menor pre\u00e7o</div>';
