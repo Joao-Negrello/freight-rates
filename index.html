@@ -114,6 +114,10 @@ td.tot{font-weight:600}
 .dim{color:var(--faint)}
 .flag{border-bottom:1px dotted currentColor;cursor:help}
 .carr{font-weight:600}
+/* Identificação do armador: logo (se houver arquivo em logos/) ou etiqueta colorida */
+.cb{display:inline-flex;align-items:center;justify-content:center;min-width:78px;height:20px;padding:0 6px;border-radius:3px;background:var(--c);color:var(--t,#fff);font-size:11px;font-weight:700;letter-spacing:.3px}
+.clogo{display:inline-flex;align-items:center;justify-content:center;width:78px;height:22px;padding:2px 4px;border-radius:3px;background:#fff;border:1px solid var(--line)}
+.clogo img{max-width:100%;max-height:100%;object-fit:contain;display:block}
 .obs{max-width:230px;overflow:hidden;text-overflow:ellipsis}
 .chip{display:inline-block;border:1px solid var(--line-strong);border-radius:3px;padding:0 4px;margin-right:3px;font-size:11px;line-height:16px;color:var(--muted);font-variant-numeric:tabular-nums}
 .raw{color:var(--faint);font-style:italic}
@@ -303,6 +307,53 @@ var SCHEDULE = [
   [/\bHMM\b|HYUNDAI/, 'https://www.hmm21.com/e-service/general/schedule/ScheduleMain.do']
 ];
 var MSK_PORTS={"NHAVA SHEVA":{"rkst":"INJHT","geo":"20JS07ETK8AE1"},"MUNDRA":{"rkst":"INLT4","geo":"09XXU0KYD95NO"},"HAZIRA":{"rkst":"INHAZ","geo":"0WLD906B7Z1ZG"},"COCHIN":{"rkst":"INCOK","geo":"1PLWPN9WJW70F"},"TUTICORIN":{"rkst":"INTUT","geo":"1VM1RGJFC1VO9"},"KOLKATA":{"rkst":"INCCU","geo":"38C3BXKY0R921"},"PIPAVAV":{"rkst":"INPPV","geo":"1QF1SC3MCQHUZ"},"ENNORE":{"rkst":"INENN","geo":"YLEOCZ8YSHLCX"},"CHENNAI":{"rkst":"INENN","geo":"YLEOCZ8YSHLCX"},"VISAKHAPATNAM":{"rkst":"INVTZ","geo":"2IBZJHEAWE2YN"},"ITAGUAI":{"rkst":"BRRSH","geo":"118IL3FWVXQN1"},"ITAPOA":{"rkst":"BRIOA","geo":"0ODHB712UAZ82"},"RIO GRANDE":{"rkst":"BRRIG","geo":"1835DCIX1HYMX"},"SALVADOR":{"rkst":"BRSSA","geo":"0CLBAS6FZOUBI"},"SANTOS":{"rkst":"BRSSZ","geo":"1BX66GARX9UAH"},"PARANAGUA":{"rkst":"BRPNG","geo":"3R8LV7CQTY45A"},"SUAPE":{"rkst":"BRB3G","geo":"06UMEUNU4I9VI"},"VITORIA":{"rkst":"BRVIX","geo":"0MGC8M302NIBI"},"PECEM":{"rkst":"BR6D3","geo":"395X0AB71OGIS"},"MANAUS":{"rkst":"BRMAO","geo":"2Q01XOB8933PA"},"ITAJAI":{"rkst":"BRA4A","geo":"0TKNIVVB82OVY"},"RIO DE JANEIRO":{"rkst":"BRRIO","geo":"19GF6Q1SUBOGP"},"VILA DO CONDE":{"rkst":"BRVIC","geo":"33U3A4O73F9NQ"}};
+
+/* Armadores: etiqueta (nome curto + cor) e arquivo de logo opcional.
+   Para usar a logo de verdade, suba o arquivo na pasta "logos/" do repositório
+   com o nome indicado em "logo" (.png ou .svg). Sem arquivo, aparece a etiqueta.
+   Para um armador novo, inclua uma linha aqui; sem linha, ele aparece em cinza. */
+var CARRIERS = [
+  {re:/MAERSK|\bMSK\b/,        label:'MAERSK',    logo:'maersk',    c:'#1f6f9c'},
+  {re:/\bMSC\b/,                label:'MSC',       logo:'msc',       c:'#8a6400'},
+  {re:/CMA/,                     label:'CMA CGM',   logo:'cma-cgm',   c:'#1f3d73'},
+  {re:/HAPAG|\bHPL\b/,          label:'HAPAG',     logo:'hapag',     c:'#b04e08'},
+  {re:/EVERGREEN|\bEMC\b/,      label:'EVERGREEN', logo:'evergreen', c:'#1d7a4a'},
+  {re:/\bHMM\b|HYUNDAI/,        label:'HMM',       logo:'hmm',       c:'#b3262e'},
+  {re:/\bONE\b|OCEAN NETWORK/,  label:'ONE',       logo:'one',       c:'#a8326e'},
+  {re:/\bZIM\b/,                label:'ZIM',       logo:'zim',       c:'#2c4a8f'},
+  {re:/\bPIL\b|PACIFIC INT/,    label:'PIL',       logo:'pil',       c:'#7a3fa0'},
+  {re:/COSCO/,                   label:'COSCO',     logo:'cosco',     c:'#22508c'},
+  {re:/\bOOCL\b/,               label:'OOCL',      logo:'oocl',      c:'#4a5a6a'},
+  {re:/WAN HAI/,                 label:'WAN HAI',   logo:'wanhai',    c:'#3d6b5a'}
+];
+var LOGO_OK = {};   // logo -> caminho do arquivo que carregou
+
+function carrierInfo(name){
+  for(var i = 0; i < CARRIERS.length; i++) if(CARRIERS[i].re.test(name)) return CARRIERS[i];
+  return {label: name.split(/\s+-\s+/).pop(), logo:null, c:'#6b6b66'};
+}
+/* Célula do armador: logo se o arquivo existir, senão etiqueta colorida. */
+function carrierCell(s){
+  var ci = carrierInfo(s.carrier), t = esc(s.carrier);
+  if(ci.logo && LOGO_OK[ci.logo]) return '<span class="clogo" title="' + t + '"><img src="' + LOGO_OK[ci.logo] + '" alt="' + esc(ci.label) + '"></span>';
+  return '<span class="cb" style="--c:' + ci.c + '" title="' + t + '">' + esc(ci.label) + '</span>';
+}
+/* Testa uma vez por armador se existe logos/<nome>.png ou .svg; ao achar, redesenha a tabela. */
+function probeLogos(){
+  var names = {};
+  DB.srcs.forEach(function(s){ var ci = carrierInfo(s.carrier); if(ci.logo) names[ci.logo] = 1; });
+  Object.keys(names).forEach(function(n){
+    if(LOGO_OK[n] !== undefined) return;
+    LOGO_OK[n] = null;
+    (function tryExt(list){
+      if(!list.length) return;
+      var img = new Image(), src = 'logos/' + n + '.' + list[0];
+      img.onload = function(){ LOGO_OK[n] = src; render(); };
+      img.onerror = function(){ tryExt(list.slice(1)); };
+      img.src = src;
+    })(['png','svg']);
+  });
+}
 
 var ICON = {
   chev:'<svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>',
@@ -617,7 +668,7 @@ function processWorkbook(wb){
         from: parseDate(g('from')), until: parseDate(g('until')),
         remarks: txt(g('remarks')), cancelRaw: txt(g('cancel'))
       };
-      s.carrierShort = s.carrier.split(/\s+-\s+/).pop();
+      s.carrierShort = carrierInfo(s.carrier).label;
       s.sur = parseSurcharges(s.remarks, s.cancelRaw);
 
       /* Problemas que impedem ou prejudicam a leitura da linha. */
@@ -846,7 +897,7 @@ function render(){
     V.priced.forEach(function(r){
       var s = r.src, c = r.c, cls = 'r' + (r.isBest ? ' best' : '') + (r.val.k === 'expired' ? ' exp' : '');
       h += '<tr class="' + cls + '" data-id="' + r.id + '">' +
-        '<td class="carr">' + esc(s.carrierShort) + '</td><td>' + esc(s.agent) + '</td><td>' + esc(r.por) + '</td><td>' + esc(r.pod) + '</td>' +
+        '<td class="carr">' + carrierCell(s) + '</td><td>' + esc(s.agent) + '</td><td>' + esc(r.por) + '</td><td>' + esc(r.pod) + '</td>' +
         '<td class="num">' + money(c.freight) + '</td>' +
         '<td class="num">' + mblCell(s.mbl) + '</td>' +
         '<td class="num">' + (s.sur.ens != null ? money(s.sur.ens) : '<span class="dim">—</span>') + '</td>' +
@@ -875,7 +926,7 @@ function render(){
       '<th>Carrier</th><th>Agente</th><th>POR</th><th>POD</th><th class="num">Frete 20\'</th><th class="num">Frete 40\'HC</th><th class="num">Free days</th><th class="num">Validade</th><th>Status</th><th>Observações</th></tr></thead><tbody>';
     V.tbc.forEach(function(r){
       var s = r.src;
-      t += '<tr><td class="carr">' + esc(s.carrierShort) + '</td><td>' + esc(s.agent) + '</td><td>' + esc(r.por) + '</td><td>' + esc(r.pod) + '</td>' +
+      t += '<tr><td class="carr">' + carrierCell(s) + '</td><td>' + esc(s.agent) + '</td><td>' + esc(r.por) + '</td><td>' + esc(r.pod) + '</td>' +
         '<td class="num">' + fTxt(s.f20) + '</td><td class="num">' + fTxt(s.f40) + '</td>' +
         '<td class="num">' + (s.free.v != null ? s.free.v : '—') + '</td><td class="num">' + esc(validityText(s)) + '</td>' +
         '<td><span class="st ' + r.val.k + '">' + r.val.label + '</span></td><td class="obs">' + surChips(s) + (s.remarks && s.sur.status !== 'none' && s.sur.status !== 'partial' ? '' : '') + '</td></tr>';
@@ -1119,7 +1170,7 @@ function loadWorkbook(wb, label){
     DB = db; SOURCE = label; OPEN = {};
     document.getElementById('fTTwrap').hidden = !DB.hasTT;
     if(!DB.hasTT) F.ttMax = null;
-    setHeader(); buildOptions(); renderQuality(); render();
+    setHeader(); buildOptions(); renderQuality(); render(); probeLogos();
   }catch(e){
     showLoadError('Não foi possível ler a planilha: ' + e.message);
   }
