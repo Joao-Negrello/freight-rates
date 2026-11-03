@@ -297,16 +297,49 @@ var PORT_ALIASES = {
   'NHAVASHEVA':'NHAVA SHEVA'
 };
 
-/* Links de schedule por armador (mantidos do site anterior). */
+/* Links de transit time / schedule por armador. */
 var SCHEDULE = [
-  [/MAERSK|\bMSK\b/, 'https://www.maersk.com/schedules/pointToPoint'],
-  [/\bMSC\b/, 'https://www.msc.com/en/search-a-schedule'],
-  [/CMA/, 'https://www.cma-cgm.com/'],
-  [/HAPAG|\bHPL\b/, 'https://www.hapag-lloyd.com/solutions/schedule/#/'],
-  [/EVERGREEN|\bEMC\b/, 'https://ss.shipmentlink.com/tvs2/jsp/TVS2_InteractiveSchedule.jsp'],
-  [/\bHMM\b|HYUNDAI/, 'https://www.hmm21.com/e-service/general/schedule/ScheduleMain.do']
+  [/HAPAG|\bHPL\b/,       'https://www.hapag-lloyd.com/solutions/schedule/#/'],
+  [/EVERGREEN|\bEMC\b/,   'https://ss.shipmentlink.com/tvs2/jsp/TVS2_InteractiveSchedule.jsp'],
+  [/CMA/,                  'https://www.cma-cgm.com/'],
+  [/MAERSK|\bMSK\b/,      'https://www.maersk.com/schedules/pointToPoint'],
+  [/\bHMM\b|HYUNDAI/,     'https://www.hmm21.com/e-service/general/schedule/ScheduleMain.do'],
+  [/\bMSC\b/,             'https://www.msc.com/en/search-a-schedule'],
+  [/\bONE\b|OCEAN NETWORK/, 'https://www.one-line.com/one-ecom/schedule/point-to-point-schedule-beta']
 ];
-var MSK_PORTS={"NHAVA SHEVA":{"rkst":"INJHT","geo":"20JS07ETK8AE1"},"MUNDRA":{"rkst":"INLT4","geo":"09XXU0KYD95NO"},"HAZIRA":{"rkst":"INHAZ","geo":"0WLD906B7Z1ZG"},"COCHIN":{"rkst":"INCOK","geo":"1PLWPN9WJW70F"},"TUTICORIN":{"rkst":"INTUT","geo":"1VM1RGJFC1VO9"},"KOLKATA":{"rkst":"INCCU","geo":"38C3BXKY0R921"},"PIPAVAV":{"rkst":"INPPV","geo":"1QF1SC3MCQHUZ"},"ENNORE":{"rkst":"INENN","geo":"YLEOCZ8YSHLCX"},"CHENNAI":{"rkst":"INENN","geo":"YLEOCZ8YSHLCX"},"VISAKHAPATNAM":{"rkst":"INVTZ","geo":"2IBZJHEAWE2YN"},"ITAGUAI":{"rkst":"BRRSH","geo":"118IL3FWVXQN1"},"ITAPOA":{"rkst":"BRIOA","geo":"0ODHB712UAZ82"},"RIO GRANDE":{"rkst":"BRRIG","geo":"1835DCIX1HYMX"},"SALVADOR":{"rkst":"BRSSA","geo":"0CLBAS6FZOUBI"},"SANTOS":{"rkst":"BRSSZ","geo":"1BX66GARX9UAH"},"PARANAGUA":{"rkst":"BRPNG","geo":"3R8LV7CQTY45A"},"SUAPE":{"rkst":"BRB3G","geo":"06UMEUNU4I9VI"},"VITORIA":{"rkst":"BRVIX","geo":"0MGC8M302NIBI"},"PECEM":{"rkst":"BR6D3","geo":"395X0AB71OGIS"},"MANAUS":{"rkst":"BRMAO","geo":"2Q01XOB8933PA"},"ITAJAI":{"rkst":"BRA4A","geo":"0TKNIVVB82OVY"},"RIO DE JANEIRO":{"rkst":"BRRIO","geo":"19GF6Q1SUBOGP"},"VILA DO CONDE":{"rkst":"BRVIC","geo":"33U3A4O73F9NQ"}};
+
+/* Códigos Maersk por porto (tabela MSK): RKST e GEOID.
+   Com os dois portos da rota mapeados, o link já abre a busca point-to-point preenchida.
+   GEOID null (N/A na tabela) = link abre a página geral de schedule da Maersk. */
+var MSK_PORTS = {
+  /* Origem */
+  'NHAVA SHEVA':   {rkst:'INJHT', geo:'20JS07ETK8AE1'},
+  'MUNDRA':        {rkst:'INLT4', geo:'09XXU0KYD95NO'},
+  'HAZIRA':        {rkst:'INHAZ', geo:'0WLD906B7Z1ZG'},
+  'COCHIN':        {rkst:'INCOK', geo:'1PLWPN9WJW70F'},
+  'TUTICORIN':     {rkst:'INTUT', geo:'1VM1RGJFC1VO9'},
+  'KOLKATA':       {rkst:'INCCU', geo:'38C3BXKY0R921'},
+  'PIPAVAV':       {rkst:'INPPV', geo:'1QF1SC3MCQHUZ'},
+  'ENNORE':        {rkst:'INENN', geo:'YLEOCZ8YSHLCX'},
+  'CHENNAI':       {rkst:'INENN', geo:'YLEOCZ8YSHLCX'},
+  'KATTUPALLI':    {rkst:'INKAT', geo:null},
+  'VISAKHAPATNAM': {rkst:'INVTZ', geo:'2IBZJHEAWE2YN'},
+  /* Destino */
+  'ITAGUAI':       {rkst:'BRRSH', geo:'118IL3FWVXQN1'},
+  'ITAPOA':        {rkst:'BRIOA', geo:'0ODHB712UAZ82'},
+  'RIO GRANDE':    {rkst:'BRRIG', geo:'1835DCIX1HYMX'},
+  'SALVADOR':      {rkst:'BRSSA', geo:'0CLBAS6FZOUBI'},
+  'SANTOS':        {rkst:'BRSSZ', geo:'1BX66GARX9UAH'},
+  'PARANAGUA':     {rkst:'BRPNG', geo:'3R8LV7CQTY45A'},
+  'SUAPE':         {rkst:'BRB3G', geo:'06UMEUNU4I9VI'},
+  'VITORIA':       {rkst:'BRVIX', geo:'0MGC8M302NIBI'},
+  'NAVEGANTES':    {rkst:'BRNVT', geo:null},
+  'PECEM':         {rkst:'BR6D3', geo:'395X0AB71OGIS'},
+  'MANAUS':        {rkst:'BRMAO', geo:'2Q01XOB8933PA'},
+  'ITAJAI':        {rkst:'BRA4A', geo:'0TKNIVVB82OVY'},
+  'RIO DE JANEIRO':{rkst:'BRRIO', geo:'19GF6Q1SUBOGP'},
+  'VILA DO CONDE': {rkst:'BRVIC', geo:'33U3A4O73F9NQ'}
+};
 
 /* Armadores: etiqueta (nome curto + cor) e arquivo de logo opcional.
    Para usar a logo de verdade, suba o arquivo na pasta "logos/" do repositório
@@ -910,7 +943,7 @@ function render(){
         '<td><span class="st ' + r.val.k + '">' + r.val.label + '</span></td>' +
         '<td class="obs">' + surChips(s) + '</td>' +
         '<td><div class="act"><button class="ib" type="button" data-copy="' + r.id + '" title="Copiar como texto de cotação">' + ICON.copy + '</button>' +
-          '<a class="ib" href="' + esc(scheduleUrl(r)) + '" target="_blank" rel="noopener" title="Schedule ' + esc(s.carrierShort) + '">' + ICON.cal + '</a></div></td>' +
+          schedLink(r) + '</div></td>' +
         '</tr>';
       if(OPEN[r.id]) h += detailRow(r, cols.length);
     });
@@ -957,15 +990,29 @@ function detailRow(r, n){
   return '<tr class="det"><td colspan="' + n + '"><dl class="kv">' + kv.map(function(p){ return '<div><dt>' + p[0] + '</dt><dd>' + p[1] + '</dd></div>'; }).join('') + '</dl></td></tr>';
 }
 
+function schedLink(r){
+  var u = scheduleUrl(r);
+  if(!u) return '<span class="ib" style="visibility:hidden">' + ICON.cal + '</span>';
+  var deep = /pointToPoint\?/.test(u);
+  return '<a class="ib" href="' + esc(u) + '" target="_blank" rel="noopener" title="Transit time ' + esc(r.src.carrierShort) + (deep ? ' (' + r.por + ' → ' + r.pod + ')' : '') + '">' + ICON.cal + '</a>';
+}
+function isoDay(d){ return d.getFullYear() + '-' + ('0' + (d.getMonth()+1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+
+/* Link de transit time da linha (por combinação POR x POD).
+   Maersk: busca point-to-point já preenchida, 4 semanas a partir da data de embarque
+   escolhida (ou de hoje), container 22G1 (20') ou 45G1 (40'HC).
+   Demais armadores: página de schedule. Sem link conhecido: null. */
 function scheduleUrl(r){
-  var s = r.src, url = '#';
+  var s = r.src, url = null;
   for(var i = 0; i < SCHEDULE.length; i++) if(SCHEDULE[i][0].test(s.carrier)){ url = SCHEDULE[i][1]; break; }
   if(/MAERSK|\bMSK\b/.test(s.carrier)){
     var op = MSK_PORTS[r.por], dp = MSK_PORTS[r.pod];
-    if(op && dp){
-      var t = new Date(), d1 = t.toISOString().slice(0,10), d2_ = new Date(t.getTime() + 28*864e5).toISOString().slice(0,10);
-      url = 'https://www.maersk.com/schedules/pointToPoint?from=' + op.geo + '&to=' + dp.geo + '&fromRkstCode=' + op.rkst + '&toRkstCode=' + dp.rkst +
-        '&containerIsoCode=' + (F.ct === '20' ? '22G1' : '45G1') + '&fromServiceMode=CY&toServiceMode=CY&numberOfWeeks=4&dateType=D&date=' + d1 + '&dateTo=' + d2_ + '&vesselFlag=';
+    if(op && dp && op.geo && dp.geo){
+      var d1 = refDate(), d2_ = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate() + 28);
+      url = 'https://www.maersk.com/schedules/pointToPoint?from=' + op.geo + '&to=' + dp.geo +
+        '&fromRkstCode=' + op.rkst + '&toRkstCode=' + dp.rkst +
+        '&containerIsoCode=' + (F.ct === '20' ? '22G1' : '45G1') +
+        '&fromServiceMode=CY&toServiceMode=CY&numberOfWeeks=4&dateType=D&date=' + isoDay(d1) + '&dateTo=' + isoDay(d2_) + '&vesselFlag=';
     }
   }
   return url;
