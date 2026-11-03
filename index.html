@@ -1116,12 +1116,12 @@ function exportCsv(){
 
 function quoteText(r){
   var s = r.src, L = [];
-  L.push('Rota: ' + r.por + ' → ' + r.pod);
-  L.push('Carrier: ' + s.carrierShort + ' | Agente: ' + s.agent);
-  L.push('Frete ' + ctLabel(F.ct) + ': USD ' + money(r.c.freight) + ' por container');
-  L.push('MBL: ' + (s.mbl.kind === 'incl' ? 'incluso' : s.mbl.kind === 'num' ? 'USD ' + money(s.mbl.v) + ' por BL' : s.mbl.kind === 'tbc' ? 'a confirmar' : '—'));
-  L.push('Validade: ' + (s.from.kind === 'spot' && s.until.kind === 'spot' ? 'SPOT' : (fmtDateCell(s.from) || '—') + ' a ' + (fmtDateCell(s.until) || '—')));
-  L.push('Free days (destino): ' + (s.free.v != null ? s.free.v + ' dias' : '—'));
+  L.push(r.por + ' x ' + r.pod);
+  L.push(s.carrierShort + ' | AGENTE: ' + s.agent);
+  L.push(ctLabel(F.ct) + ': USD ' + money(r.c.freight) + '/CNTR');
+  L.push('MBL: ' + (s.mbl.kind === 'incl' ? 'INCLUSO' : s.mbl.kind === 'num' ? 'USD ' + money(s.mbl.v) + '/BL' : s.mbl.kind === 'tbc' ? 'TBC' : '—'));
+  L.push('VAL: ' + (s.from.kind === 'spot' && s.until.kind === 'spot' ? 'SPOT' : (fmtDateCell(s.from) || '—') + ' A ' + (fmtDateCell(s.until) || '—')));
+  L.push('FT: ' + (s.free.v != null ? s.free.v + ' DIAS' : '—'));
   var rem = [s.remarks, s.cancelRaw ? 'Cancellation fee: ' + s.cancelRaw : ''].filter(Boolean).join(' | ');
   if(rem) L.push('Remarks: ' + rem);
   return L.join('\n');
